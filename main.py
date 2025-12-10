@@ -8,32 +8,30 @@ class TuringMachine:
         self.head_position = 1
         self.current_state = 'q0'
         self.halted = False
+        self.history = []  # We will save every frame here
 
     def print_tape(self):
-        # Clear screen for animation effect
-        os.system('cls' if os.name == 'nt' else 'clear')
-
-        print(f"Current State: {self.current_state}")
-
+        # 1. Construct the visual block (The Frame)
         border = "-" * (len(self.tape) * 4 + 1)
-
         content = ""
         for char in self.tape:
             content += f"| {char} "
         content += "|"
-
         pointer = " " * (self.head_position * 4 + 2) + "^"
 
-        print(border)
-        print(content)
-        print(border)
-        print(pointer)
+        # Combine it all into one string
+        frame = f"Current State: {self.current_state}\n{border}\n{content}\n{border}\n{pointer}"
 
-        # Pause to let user see the step
+        # 2. Save this frame to our history list
+        self.history.append(frame)
+
+        # 3. Display it (Animation Effect)
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(frame)
         time.sleep(1)
 
     def step(self):
-        # Expand tape if head moves out of bounds
+        # Handle tape expansion
         if self.head_position < 0:
             self.tape.insert(0, 'B')
             self.head_position = 0
@@ -62,8 +60,8 @@ class TuringMachine:
                 self.head_position -= 1
             elif char_under_head == 'B':
                 # --- STAY LOGIC ---
-                # Found the start (Blank).
-                # Switch to q2 (Halt) immediately. DO NOT move head.
+                # Found the start (Blank). Switch to q2 (Halt).
+                # DO NOT move the head.
                 self.current_state = 'q2'
 
         # --- STATE q2: Halt ---
@@ -75,7 +73,7 @@ class TuringMachine:
             self.print_tape()
             self.step()
 
-        self.print_tape()  # Show final state
+        self.print_tape()  # Capture final state
         result = "".join(self.tape).replace('B', '')
         return result
 
@@ -92,7 +90,23 @@ if __name__ == "__main__":
 
     if is_valid and user_input:
         tm = TuringMachine(user_input)
+
+        # 1. Run the Animation
+        print("Starting Machine...")
+        time.sleep(1)
         result = tm.run()
+
+        # 2. Show Final Result
         print(f"\nFinal Result (1's complement): {result}")
+
+        # 3. Ask if they want to see the logs
+        show_history = input("\nDo you want to see the tape for every move? (y/n): ").lower()
+
+        if show_history == 'y':
+            print("\n" + "=" * 20 + " HISTORY " + "=" * 20 + "\n")
+            for i, frame in enumerate(tm.history):
+                print(f"Step {i}:")
+                print(frame)
+                print("-" * 30)
     else:
-        print("number invalid")
+        print("Number invalid.")
