@@ -6,6 +6,8 @@ A Python implementation of a single-tape Turing Machine that calculates the 1's 
 
 ![Transition Diagram](transition-diagram.png)
 
+(this can be done in 2 states aswell, i've just added an extra state for fun 😭)
+
 # Terminal output
 
 ![turing machine](turing-machine.gif)
